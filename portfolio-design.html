@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卢官有 | AI 简历对话作品集</title>
+  <style>
+    :root {
+      --bg: #f6f7f2;
+      --surface: #ffffff;
+      --surface-soft: #f0f5f0;
+      --ink: #17211d;
+      --ink-soft: #34433d;
+      --muted: #64726c;
+      --line: #dce5de;
+      --line-strong: #bfd6cf;
+      --teal: #0f8377;
+      --teal-dark: #0a5f57;
+      --teal-soft: #ddf3ee;
+      --coral: #d95f49;
+      --coral-soft: #fdebe6;
+      --amber: #9b6a12;
+      --amber-soft: #fff1c8;
+      --shadow: 0 22px 70px rgba(25, 37, 31, 0.12);
+      --radius: 8px;
+      --container: 1220px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(221, 243, 238, 0.76), rgba(246, 247, 242, 0) 420px),
+        radial-gradient(circle at 88% 12%, rgba(253, 235, 230, 0.7), rgba(253, 235, 230, 0) 280px),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      letter-spacing: 0;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .page-shell {
+      width: min(var(--container), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(220, 229, 222, 0.86);
+      background: rgba(246, 247, 242, 0.9);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      min-height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 1px;
+      min-width: 0;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .brand-role {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+
+    .nav a {
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 7px;
+      padding: 0 12px;
+    }
+
+    .nav a:hover {
+      background: var(--surface-soft);
+    }
+
+    .nav-cta {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      padding: 0 15px;
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(23, 33, 29, 0.16);
+    }
+
+    .hero {
+      min-height: calc(100dvh - 66px);
+      display: grid;
+      grid-template-columns: minmax(560px, 1.58fr) minmax(330px, 0.72fr);
+      gap: 24px;
+      align-items: stretch;
+      padding: 28px 0 34px;
+    }
+
+    .chat-panel {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 690px;
+      overflow: hidden;
+      border: 1px solid rgba(191, 214, 207, 0.95);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow);
+      outline: 4px solid rgba(15, 131, 119, 0.08);
+    }
+
+    .chat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(221, 243, 238, 0.82), rgba(255, 255, 255, 0.92));
+      padding: 18px 20px;
+    }
+
+    .chat-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .assistant-icon {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--teal);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .chat-title strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .chat-title span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .live-badge {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #bce2d9;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: var(--teal-dark);
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #2e8a53;
+      box-shadow: 0 0 0 4px rgba(46, 138, 83, 0.14);
+    }
+
+    .chat-body {
+      display: grid;
+      align-content: start;
+      gap: 16px;
+      padding: 18px 20px;
+    }
+
+    .quick-label {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .prompt {
+      min-height: 52px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink-soft);
+      padding: 12px 13px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .prompt:hover {
+      border-color: #add8cf;
+      background: #f6fcfa;
+    }
+
+    .prompt.primary {
+      grid-column: 1 / -1;
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .conversation {
+      display: grid;
+      gap: 12px;
+      padding-top: 2px;
+    }
+
+    .message {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: var(--teal-dark);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .bubble {
+      max-width: min(78%, 640px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px 14px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.66;
+    }
+
+    .user .bubble {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .bubble p {
+      margin: 0;
+    }
+
+    .bubble p + p {
+      margin-top: 8px;
+    }
+
+    .source-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .source {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid #cfe2dc;
+      background: #f6fbf9;
+      color: #486058;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 5px;
+      transform: translateY(2px);
+    }
+
+    .typing i {
+      width: 5px;
+      height: 5px;
+      display: block;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid var(--line);
+      background: #fbfcfa;
+      padding: 16px 20px 20px;
+    }
+
+    .chat-input input {
+      min-width: 0;
+      flex: 1;
+      height: 54px;
+      border: 2px solid #b8ded5;
+      border-radius: 7px;
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+      padding: 0 15px;
+      box-shadow: 0 0 0 4px rgba(15, 131, 119, 0.08);
+    }
+
+    .send-button {
+      width: 54px;
+      height: 54px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 7px;
+      background: var(--coral);
+      color: #fff;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .candidate-panel {
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .candidate-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.78);
+      padding: 22px;
+    }
+
+    .candidate-kicker {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink-soft);
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    h1 {
+      margin: 16px 0 0;
+      font-size: clamp(38px, 5vw, 62px);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .candidate-title {
+      margin: 10px 0 0;
+      color: var(--teal-dark);
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.45;
+    }
+
+    .candidate-summary {
+      margin: 14px 0 0;
+      color: var(--ink-soft);
+      font-size: 15px;
+      line-height: 1.72;
+    }
+
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 7px;
+      border: 1px solid transparent;
+      padding: 0 14px;
+      font-weight: 850;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #fff;
+      box-shadow: 0 14px 30px rgba(15, 131, 119, 0.2);
+    }
+
+    .btn-secondary {
+      border-color: var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+
+    .evidence-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.74);
+      overflow: hidden;
+    }
+
+    .panel-block {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-block:last-child {
+      border-bottom: 0;
+    }
+
+    .panel-title {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .evidence-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .evidence-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: start;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.48;
+    }
+
+    .evidence-icon {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--surface-soft);
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: #3d4d46;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .tag.accent {
+      border-color: #f3cbbf;
+      background: var(--coral-soft);
+      color: #9a3e2f;
+    }
+
+    .tag.signal {
+      border-color: #ead68d;
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .section {
+      padding: 66px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--teal-dark);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(28px, 3.2vw, 42px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .section-note {
+      max-width: 430px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.68;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .project-card {
+      display: flex;
+      min-height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: 0 14px 34px rgba(25, 37, 31, 0.07);
+    }
+
+    .project-media {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #e8eee9;
+    }
+
+    .project-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+
+    .media-chip {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      border: 1px solid rgba(220, 229, 222, 0.86);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #29342f;
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .play {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 16px;
+      box-shadow: 0 12px 28px rgba(23, 33, 29, 0.22);
+    }
+
+    .project-content {
+      flex: 1;
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .project-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .project-title-row h3 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.28;
+    }
+
+    .project-type {
+      flex: 0 0 auto;
+      border: 1px solid #f0d5b5;
+      border-radius: 999px;
+      background: #fff0dc;
+      color: #8a4a1f;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .project-content p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.66;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    .stack span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fbfcfa;
+      color: #42504a;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .detail-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--teal-dark);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .mock-visual {
+      height: 100%;
+      display: grid;
+      align-content: center;
+      gap: 16px;
+      padding: 24px;
+      background:
+        linear-gradient(135deg, #fcf5ed, #edf6f3);
+    }
+
+    .mock-window {
+      border: 1px solid rgba(23, 33, 29, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      padding: 14px;
+      box-shadow: 0 14px 30px rgba(23, 33, 29, 0.09);
+    }
+
+    .bars {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      align-items: end;
+      gap: 7px;
+      height: 112px;
+    }
+
+    .bars i {
+      display: block;
+      border-radius: 5px 5px 2px 2px;
+      background: var(--teal);
+    }
+
+    .proof-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .video-preview {
+      position: relative;
+      min-height: 410px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #101815;
+      box-shadow: var(--shadow);
+    }
+
+    .video-preview img {
+      width: 100%;
+      height: 100%;
+      min-height: 410px;
+      object-fit: cover;
+      object-position: top center;
+      opacity: 0.72;
+      filter: saturate(0.92);
+    }
+
+    .video-overlay {
+      position: absolute;
+      inset: auto 18px 18px 18px;
+      display: grid;
+      gap: 10px;
+      color: #fff;
+    }
+
+    .video-overlay strong {
+      max-width: 560px;
+      font-size: 24px;
+      line-height: 1.22;
+    }
+
+    .video-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .video-meta span {
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 6px 9px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .proof-panel {
+      display: grid;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 20px;
+    }
+
+    .proof-item {
+      display: grid;
+      gap: 7px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
+    }
+
+    .proof-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .proof-item strong {
+      font-size: 16px;
+    }
+
+    .proof-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.68;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .skill-column {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px;
+    }
+
+    .skill-column h3 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .skill-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .skill-list span {
+      display: block;
+      border-bottom: 1px solid #edf2ee;
+      color: #3f4b45;
+      padding: 0 0 9px;
+      font-size: 14px;
+      line-height: 1.48;
+    }
+
+    .skill-list span:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .contact-band {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 58px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: #fff;
+      padding: 28px;
+    }
+
+    .contact-band h2 {
+      font-size: clamp(25px, 2.8vw, 36px);
+    }
+
+    .contact-band p {
+      max-width: 680px;
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, 0.74);
+      line-height: 1.7;
+    }
+
+    .contact-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .contact-actions .btn-secondary {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 0 30px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .candidate-panel {
+        align-content: start;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.9fr);
+      }
+
+      .project-grid,
+      .skills-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .proof-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page-shell {
+        width: min(100% - 28px, var(--container));
+      }
+
+      .topbar-inner {
+        min-height: 62px;
+      }
+
+      .brand-role,
+      .nav {
+        display: none;
+      }
+
+      .nav-cta {
+        min-height: 40px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+
+      .hero {
+        gap: 16px;
+        padding: 14px 0 26px;
+      }
+
+      .chat-panel {
+        min-height: 650px;
+      }
+
+      .chat-top {
+        align-items: flex-start;
+        padding: 14px;
+      }
+
+      .assistant-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .chat-title strong {
+        font-size: 17px;
+      }
+
+      .chat-title span {
+        font-size: 12px;
+      }
+
+      .live-badge {
+        display: none;
+      }
+
+      .chat-body {
+        gap: 12px;
+        padding: 13px;
+      }
+
+      .prompt-grid,
+      .candidate-panel,
+      .project-grid,
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prompt {
+        min-height: 46px;
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .bubble {
+        max-width: 92%;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+      }
+
+      .chat-input {
+        padding: 12px;
+      }
+
+      .chat-input input {
+        height: 50px;
+        font-size: 13px;
+      }
+
+      .send-button {
+        width: 50px;
+        height: 50px;
+      }
+
+      .candidate-card {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 35px;
+      }
+
+      .candidate-title {
+        font-size: 16px;
+      }
+
+      .action-row .btn {
+        flex: 1 1 100%;
+      }
+
+      .section {
+        padding: 44px 0;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .video-preview,
+      .video-preview img {
+        min-height: 300px;
+      }
+
+      .video-overlay strong {
+        font-size: 20px;
+      }
+
+      .contact-band {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+
+      .contact-actions {
+        justify-content: stretch;
+      }
+
+      .contact-actions .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .brand-name {
+        font-size: 15px;
+      }
+
+      .chat-title > div > span {
+        display: none;
+      }
+
+      .project-title-row {
+        display: grid;
+      }
+
+      .project-type {
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="page-shell topbar-inner">
+      <a href="#" class="brand" aria-label="返回顶部">
+        <span class="brand-mark">卢</span>
+        <span class="brand-copy">
+          <span class="brand-name">卢官有</span>
+          <span class="brand-role">AI 应用开发 / 前端工程 / Python 后端</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="#assistant">AI 对话</a>
+        <a href="#projects">项目证据</a>
+        <a href="#skills">能力</a>
+        <a href="#contact">联系</a>
+      </nav>
+      <a class="nav-cta" href="卢官有-简历.pdf">下载简历</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-shell hero">
+      <section class="chat-panel" id="assistant" aria-label="AI 简历对话">
+        <div class="chat-top">
+          <div class="chat-title">
+            <span class="assistant-icon">AI</span>
+            <div>
+              <strong>直接问我的简历和项目</strong>
+              <span>支持追问项目细节、技术栈、岗位匹配度，回答会带上可验证材料。</span>
+            </div>
+          </div>
+          <span class="live-badge"><span class="status-dot"></span>可对话</span>
+        </div>
+
+        <div class="chat-body">
+          <p class="quick-label">面试官常问</p>
+          <div class="prompt-grid">
+            <button class="prompt primary">你最适合什么岗位？为什么？</button>
+            <button class="prompt">Dify 简历助手你负责了哪部分？</button>
+            <button class="prompt">有哪些可以验证的项目截图或视频？</button>
+            <button class="prompt">前端、后端和 AI 应用能力分别体现在哪？</button>
+            <button class="prompt">如果接手业务型 AI Agent，你会怎么落地？</button>
+          </div>
+
+          <div class="conversation" aria-label="对话示例">
+            <div class="message">
+              <span class="avatar">AI</span>
+              <div class="bubble">
+                <p>你好，我是卢官有的 AI 简历助手。你可以直接问他的项目经历、技术栈、个人职责和岗位匹配度。</p>
+                <p>我会尽量基于简历和项目材料回答；涉及项目真实性的地方，会提示你查看截图、视频或详情说明。</p>
+              </div>
+            </div>
+
+            <div class="message user">
+              <div class="bubble">请用 1 分钟说明他为什么适合 AI 应用开发岗位。</div>
+            </div>
+
+            <div class="message">
+              <span class="avatar">AI</span>
+              <div class="bubble">
+                <p>卢官有的优势不是只会调用模型接口，而是能把 AI 对话、前端交互、后端代理和项目证据组织成一个可访问的产品。</p>
+                <p>代表项目是 AI 简历助手：前端负责对话体验和流式渲染，后端负责 Dify API 代理、密钥隔离和 SSE 转发，项目截图与演示视频可继续向下查看。</p>
+                <div class="source-row" aria-label="回答来源">
+                  <span class="source">来源：AI 简历助手</span>
+                  <span class="source">来源：项目截图</span>
+                  <span class="source">来源：技术栈说明</span>
+                </div>
+                <span class="typing" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <input value="例如：讲讲你的 Dify 项目、后端接口、岗位匹配度..." aria-label="聊天输入框">
+          <button class="send-button" aria-label="发送">↑</button>
+        </div>
+      </section>
+
+      <aside class="candidate-panel" aria-label="候选人摘要">
+        <section class="candidate-card">
+          <span class="candidate-kicker"><span class="status-dot"></span>打开页面即可提问</span>
+          <h1>卢官有</h1>
+          <p class="candidate-title">AI 应用开发 / 前端工程 / Python 后端</p>
+          <p class="candidate-summary">
+            我把传统简历改成可追问的 AI 对话入口，同时保留项目截图、视频和职责说明。面试官不用先翻长 PDF，可以直接问：做过什么、负责哪部分、难点怎么解决。
+          </p>
+          <div class="action-row">
+            <a class="btn btn-primary" href="#assistant">开始提问</a>
+            <a class="btn btn-secondary" href="卢官有-简历.pdf">下载 PDF</a>
+          </div>
+        </section>
+
+        <section class="evidence-panel" aria-label="可验证材料">
+          <div class="panel-block">
+            <p class="panel-title">可验证材料</p>
+            <div class="evidence-list">
+              <a class="evidence-item" href="#projects">
+                <span class="evidence-icon">图</span>
+                <span>项目截图：AI 简历助手、移动端适配和可视化 Demo</span>
+              </a>
+              <a class="evidence-item" href="#proof">
+                <span class="evidence-icon">播</span>
+                <span>演示说明：SSE 流式问答、预设问题和项目细节追问</span>
+              </a>
+              <a class="evidence-item" href="#skills">
+                <span class="evidence-icon">栈</span>
+                <span>能力范围：React、Python、Dify、MySQL、Three.js</span>
+              </a>
+            </div>
+          </div>
+          <div class="panel-block">
+            <p class="panel-title">重点技术</p>
+            <div class="tag-cloud">
+              <span class="tag">React</span>
+              <span class="tag">Python</span>
+              <span class="tag accent">Dify</span>
+              <span class="tag">SSE 流式响应</span>
+              <span class="tag signal">AI Agent</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">Three.js</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="page-shell section" id="projects">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">项目证据</p>
+          <h2>不是只写关键词，而是让面试官能看到作品。</h2>
+        </div>
+        <p class="section-note">
+          每个项目都对应截图、职责边界和技术说明；AI 对话给入口，项目材料负责增强可信度。
+        </p>
+      </div>
+
+      <div class="project-grid">
+        <article class="project-card">
+          <div class="project-media">
+            <img src="portfolio-design-desktop.png" alt="AI 简历助手桌面端界面截图">
+            <span class="media-chip">核心项目</span>
+            <span class="play">▶</span>
+          </div>
+          <div class="project-content">
+            <div class="project-title-row">
+              <h3>AI 简历助手</h3>
+              <span class="project-type">AI 应用</span>
+            </div>
+            <p>基于 Dify API 的可追问式简历体验，重点体现对话 UI、SSE 流式渲染、后端代理和项目证据组织。</p>
+            <div class="stack">
+              <span>React</span>
+              <span>Python</span>
+              <span>Dify</span>
+              <span>SSE</span>
+            </div>
+            <a class="detail-link" href="#proof">查看详情 →</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <div class="project-media">
+            <img src="portfolio-design-mobile.png" alt="AI 简历助手移动端界面截图">
+            <span class="media-chip">移动端</span>
+          </div>
+          <div class="project-content">
+            <div class="project-title-row">
+              <h3>移动端问答体验</h3>
+              <span class="project-type">响应式</span>
+            </div>
+            <p>手机端优先保留 AI 对话入口，让招聘方在微信或浏览器中打开时，也能直接提问并查看关键材料。</p>
+            <div class="stack">
+              <span>响应式布局</span>
+              <span>触控尺寸</span>
+              <span>内容优先级</span>
+            </div>
+            <a class="detail-link" href="#proof">查看详情 →</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <div class="project-media">
+            <div class="mock-visual" role="img" aria-label="算法可视化页面示意图">
+              <div class="mock-window">
+                <div class="bars">
+                  <i style="height: 42%"></i>
+                  <i style="height: 76%"></i>
+                  <i style="height: 36%"></i>
+                  <i style="height: 92%"></i>
+                  <i style="height: 58%"></i>
+                  <i style="height: 70%"></i>
+                  <i style="height: 48%"></i>
+                  <i style="height: 84%"></i>
+                </div>
+              </div>
+            </div>
+            <span class="media-chip">Demo</span>
+          </div>
+          <div class="project-content">
+            <div class="project-title-row">
+              <h3>算法可视化页面</h3>
+              <span class="project-type">前端作品</span>
+            </div>
+            <p>通过交互式页面展示排序过程和状态变化，作为前端工程、动效组织和教学表达能力的补充证据。</p>
+            <div class="stack">
+              <span>HTML</span>
+              <span>JavaScript</span>
+              <span>Canvas</span>
+            </div>
+            <a class="detail-link" href="#proof">查看详情 →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell section" id="proof">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">核心项目拆解</p>
+          <h2>AI 对话背后，要能讲清楚工程实现。</h2>
+        </div>
+        <p class="section-note">
+          这里回答技术面试官最关心的问题：你做了什么、难点是什么、如何证明它不是一个空 Demo。
+        </p>
+      </div>
+
+      <div class="proof-layout">
+        <div class="video-preview">
+          <img src="portfolio-design-desktop.png" alt="AI 简历助手演示画面">
+          <div class="video-overlay">
+            <span class="play">▶</span>
+            <strong>Dify 简历助手：从提问到流式回答的完整演示</strong>
+            <div class="video-meta">
+              <span>预设问题</span>
+              <span>SSE 流式输出</span>
+              <span>后端代理</span>
+              <span>移动端适配</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="proof-panel">
+          <div class="proof-item">
+            <strong>项目背景</strong>
+            <p>传统 PDF 简历只能被动阅读，很难快速追问项目细节。本项目把简历知识库和 Dify 对话能力结合，让访问者直接提问。</p>
+          </div>
+          <div class="proof-item">
+            <strong>个人职责</strong>
+            <p>负责首屏信息架构、聊天交互、流式文本渲染、后端代理设计、项目素材组织和移动端适配。</p>
+          </div>
+          <div class="proof-item">
+            <strong>技术难点</strong>
+            <p>处理 SSE 增量响应、生成中状态、错误重试、API Key 隔离，以及桌面端和手机端的信息密度平衡。</p>
+          </div>
+          <div class="proof-item">
+            <strong>可验证结果</strong>
+            <p>页面打开后第一屏即可提问，下方提供项目截图、演示说明和简历下载，避免只展示一个聊天框而缺少证据。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="page-shell section" id="skills">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">能力范围</p>
+          <h2>围绕 AI 应用落地组织技术栈。</h2>
+        </div>
+        <p class="section-note">
+          不用百分比自评分，改成“能承担什么工作”，更适合给 HR 和技术面试官快速判断。
+        </p>
+      </div>
+
+      <div class="skills-grid">
+        <div class="skill-column">
+          <h3>前端工程</h3>
+          <div class="skill-list">
+            <span>React / Vite 页面搭建与组件拆分</span>
+            <span>聊天框、表单、卡片和响应式布局</span>
+            <span>Three.js / Canvas 可视化表达</span>
+          </div>
+        </div>
+        <div class="skill-column">
+          <h3>后端接口</h3>
+          <div class="skill-list">
+            <span>Python / FastAPI 接口设计</span>
+            <span>Dify API 代理与密钥隔离</span>
+            <span>MySQL 数据和媒体元信息管理</span>
+          </div>
+        </div>
+        <div class="skill-column">
+          <h3>AI 应用</h3>
+          <div class="skill-list">
+            <span>Dify 工作流和知识库问答</span>
+            <span>Prompt 编排与岗位匹配回答</span>
+            <span>AI Agent 业务流程落地思路</span>
+          </div>
+        </div>
+        <div class="skill-column">
+          <h3>交付能力</h3>
+          <div class="skill-list">
+            <span>从需求、设计稿到可访问页面</span>
+            <span>项目截图、视频和文档组织</span>
+            <span>移动端适配与上线迭代</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-shell" id="contact">
+      <div class="contact-band">
+        <div>
+          <h2>想继续了解，可以直接问，也可以下载简历。</h2>
+          <p>这个作品集的重点是把“简历阅读”变成“可追问的面试入口”：AI 对话负责快速解释，项目证据负责证明经历真实。</p>
+        </div>
+        <div class="contact-actions">
+          <a class="btn btn-primary" href="#assistant">回到 AI 对话</a>
+          <a class="btn btn-secondary" href="卢官有-简历.pdf">下载简历</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page-shell footer">
+    <span>© 2026 卢官有 · AI 简历对话作品集 · React / Python / Dify / SSE</span>
+  </footer>
+</body>
+</html>

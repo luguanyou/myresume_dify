@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 简历作品集 Vibe Coding 完整开发计划</title>
+  <style>
+    :root {
+      --bg: #f6f7f2;
+      --surface: #ffffff;
+      --ink: #17211d;
+      --muted: #63716b;
+      --line: #dce5de;
+      --teal: #0f8377;
+      --teal-soft: #e0f3ef;
+      --coral: #d95f49;
+      --amber-soft: #fff2cc;
+      --radius: 8px;
+      --shadow: 0 18px 50px rgba(25, 37, 31, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(224, 243, 239, 0.75), rgba(246, 247, 242, 0) 360px),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 56px 0 30px;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #bde0d8;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: #0a5f57;
+      padding: 6px 11px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    h1 {
+      max-width: 860px;
+      margin: 18px 0 12px;
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 820px;
+      margin: 0;
+      color: #33443d;
+      font-size: 18px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .meta-card,
+    section {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.84);
+      box-shadow: var(--shadow);
+    }
+
+    .meta-card {
+      padding: 14px 15px;
+    }
+
+    .meta-card strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .meta-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      display: grid;
+      gap: 22px;
+      padding: 12px 0 60px;
+    }
+
+    section {
+      padding: 24px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.18;
+    }
+
+    h3 {
+      margin: 22px 0 8px;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    ul,
+    ol {
+      margin: 10px 0 0;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    code {
+      border: 1px solid #d9e5df;
+      border-radius: 6px;
+      background: #f7faf8;
+      padding: 2px 6px;
+      color: #143d37;
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow-x: auto;
+      border: 1px solid #d9e5df;
+      border-radius: var(--radius);
+      background: #111c18;
+      color: #eaf6f2;
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    pre code {
+      border: 0;
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    .phase {
+      border-left: 4px solid var(--teal);
+      padding-left: 16px;
+    }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist li {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--teal);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .note {
+      border: 1px solid #ead68d;
+      border-radius: var(--radius);
+      background: var(--amber-soft);
+      padding: 14px;
+      color: #4e3b0b;
+    }
+
+    .danger {
+      border-color: #f0c6bd;
+      background: #fff0ed;
+      color: #6f2c20;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f7f4;
+      color: #20332d;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      padding: 5px 9px;
+      color: #34433d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 780px) {
+      .meta-grid,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell">
+    <span class="eyebrow">Vibe Coding 执行路线 · 2026-06-14</span>
+    <h1>AI 简历作品集完整项目开发计划</h1>
+    <p class="lead">
+      这份计划用于把当前静态设计稿推进成完整可上线项目：React 前台、React 后台管理、FastAPI 后端、MySQL 数据、Dify SSE 流式对话、媒体资源和简历下载。重点不是一次性让 AI 写完所有代码，而是按阶段给 AI 明确上下文、明确产出、逐步验收。
+    </p>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <strong>当前状态</strong>
+        <span>已有 PRD、API 规格、MySQL 规格、HTML 设计稿；后台管理已纳入 MVP</span>
+      </div>
+      <div class="meta-card">
+        <strong>目标版本</strong>
+        <span>MVP v1.0，可公开访问和面试展示</span>
+      </div>
+      <div class="meta-card">
+        <strong>技术栈</strong>
+        <span>React + Vite + FastAPI + MySQL + Dify + 后台 CRUD</span>
+      </div>
+      <div class="meta-card">
+        <strong>核心验收</strong>
+        <span>打开首屏即可 AI 提问，后台可维护项目和媒体</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section>
+      <h2>1. 你的整体操作流程</h2>
+      <ol>
+        <li>先准备素材和 Dify 应用，不急着写代码。</li>
+        <li>让 AI 搭建项目骨架，前后端分开跑通。</li>
+        <li>先做后端健康检查、项目接口、简历下载和后台登录。</li>
+        <li>实现后台项目、截图、视频、简历、站点配置和预设问题 CRUD。</li>
+        <li>再接 Dify API 代理，确认 SSE 流式返回真实可用。</li>
+        <li>把静态设计稿拆成 React 前台组件，同时实现后台管理页面。</li>
+        <li>做移动端、错误态、加载态、空状态、后台鉴权和安全检查。</li>
+        <li>部署上线，最后用真实浏览器做一次完整面试官路径和管理员维护路径测试。</li>
+      </ol>
+
+      <div class="note">
+        <strong>Vibe Coding 原则：</strong>
+        每次只让 AI 做一个阶段，不要一句话说“帮我做完整项目”。你要像产品经理和技术负责人一样，给它输入现有文档、目标、边界、验收标准，然后让它输出代码和自测结果。
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 推荐目录结构</h2>
+      <p>建议从当前目录演进为下面结构。保留现有文档和设计稿，把真实代码放进 <code>frontend/</code> 和 <code>backend/</code>。</p>
+      <pre><code>myresume/
+├── docs/
+│   ├── AI简历作品集网站PRD.md
+│   ├── spec-api-portfolio-backend.md
+│   └── spec-data-portfolio-mysql.md
+├── design/
+│   ├── portfolio-design.html
+│   ├── portfolio-design-desktop.png
+│   └── portfolio-design-mobile.png
+├── frontend/
+│   ├── package.json
+│   ├── index.html
+│   └── src/
+│       ├── components/
+│       ├── admin/
+│       ├── pages/
+│       ├── services/
+│       └── styles/
+├── backend/
+│   ├── pyproject.toml
+│   ├── .env.example
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── api/
+│   │   ├── core/
+│   │   ├── models/
+│   │   ├── schemas/
+│   │   └── services/
+│   └── tests/
+├── uploads/
+│   ├── projects/
+│   └── resume/
+└── README.md</code></pre>
+    </section>
+
+    <section>
+      <h2>3. 阶段计划总览</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>阶段</th>
+              <th>目标</th>
+              <th>主要产出</th>
+              <th>验收标准</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Phase 0</td>
+              <td>准备素材与密钥</td>
+              <td>Dify 应用、知识库、项目素材、环境变量</td>
+              <td>Dify 控制台可手动问答，素材齐全</td>
+            </tr>
+            <tr>
+              <td>Phase 1</td>
+              <td>项目骨架</td>
+              <td>frontend、backend、README、env 示例</td>
+              <td>前端和后端都能本地启动</td>
+            </tr>
+            <tr>
+              <td>Phase 2</td>
+              <td>MySQL、基础 API 与后台鉴权</td>
+              <td>建表、种子数据、项目接口、简历接口、管理员登录</td>
+              <td>公开 API 可用，/admin/auth/login 可返回 token</td>
+            </tr>
+            <tr>
+              <td>Phase 3</td>
+              <td>后台 CRUD API</td>
+              <td>项目、媒体、简历、站点配置、预设问题 CRUD</td>
+              <td>登录后可通过接口维护公开页面内容</td>
+            </tr>
+            <tr>
+              <td>Phase 4</td>
+              <td>Dify SSE 代理</td>
+              <td>/api/chat/stream、错误处理、流式转发</td>
+              <td>前端或 curl 能看到 event: message 和 event: done</td>
+            </tr>
+            <tr>
+              <td>Phase 5</td>
+              <td>React 前台与后台页面</td>
+              <td>公开作品集、AI 对话、后台管理界面</td>
+              <td>前台接真实接口，后台能完成内容维护</td>
+            </tr>
+            <tr>
+              <td>Phase 6</td>
+              <td>联调和体验优化</td>
+              <td>加载态、错误态、移动端、后台鉴权、SEO 基础</td>
+              <td>面试官路径和管理员路径都顺畅</td>
+            </tr>
+            <tr>
+              <td>Phase 7</td>
+              <td>上线部署</td>
+              <td>生产环境、域名、HTTPS、日志</td>
+              <td>公网访问，Dify Key 不暴露</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 0：开始写代码前，你先准备这些</h2>
+      <h3>0.1 Dify 准备</h3>
+      <ul class="checklist">
+        <li>创建 Dify Chatflow 或 Chat App，应用类型选择适合问答的聊天应用。</li>
+        <li>把简历 PDF 内容、项目说明、技术栈、个人职责整理进 Dify 知识库。</li>
+        <li>配置系统提示词：要求回答必须基于简历和项目材料，不确定就说明不确定。</li>
+        <li>在 Dify 控制台测试 7 个问题：自我介绍、岗位匹配、Dify 项目、前端能力、后端接口、AI Agent、项目真实性。</li>
+        <li>拿到 <code>DIFY_API_BASE_URL</code> 和 <code>DIFY_API_KEY</code>，只放后端 <code>.env</code>。</li>
+      </ul>
+
+      <h3>0.2 素材准备</h3>
+      <ul class="checklist">
+        <li>确认当前简历文件：<code>卢官有-简历.pdf</code>。</li>
+        <li>准备 3 个项目的标题、简介、技术栈、个人职责、难点和解决方案。</li>
+        <li>每个项目至少准备 1 张截图，核心 AI 简历助手准备 30-60 秒演示视频。</li>
+        <li>确认联系方式：邮箱、电话或微信、GitHub、在线作品链接。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>你是我的全栈开发搭档。当前项目是 AI 简历作品集网站。
+请先不要写代码，先根据我提供的 PRD、API 规格、MySQL 规格，列出实现 MVP 前还缺哪些素材、密钥、配置和决策。
+要求输出清单，按“必须准备 / 可以后补 / 不建议现在做”分类。</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 1：搭建项目骨架</h2>
+      <h3>目标</h3>
+      <p>创建前后端基础工程，让项目从静态设计稿进入可开发状态。</p>
+
+      <h3>建议命令</h3>
+      <pre><code># 前端
+npm create vite@latest frontend -- --template react-ts
+cd frontend
+npm install
+npm run dev
+
+# 后端
+mkdir backend
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install fastapi uvicorn pydantic-settings sqlalchemy pymysql httpx python-multipart pytest
+uvicorn app.main:app --reload --port 8000</code></pre>
+
+      <h3>让 AI 做什么</h3>
+      <ul class="checklist">
+        <li>创建 <code>frontend/</code> React + Vite + TypeScript 项目。</li>
+        <li>创建 <code>backend/</code> FastAPI 项目。</li>
+        <li>后端先实现 <code>GET /api/health</code>。</li>
+        <li>创建 <code>.env.example</code>，但不要写真实密钥。</li>
+        <li>写 <code>README.md</code>，说明本地启动方式。</li>
+      </ul>
+
+      <h3>验收</h3>
+      <ul>
+        <li><code>http://localhost:5173</code> 能打开前端默认页。</li>
+        <li><code>http://localhost:8000/api/health</code> 返回 <code>{"status":"ok"}</code>。</li>
+        <li>仓库里没有真实 <code>DIFY_API_KEY</code>、MySQL 密码。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请根据当前项目文档，帮我搭建 React + Vite + TypeScript 前端和 FastAPI 后端骨架。
+要求：
+1. 前端放在 frontend/
+2. 后端放在 backend/
+3. 后端实现 GET /api/health
+4. 创建 .env.example，但不要写真实密钥
+5. 写 README 本地启动说明
+6. 每完成一步说明如何验证</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 2：MySQL、公开基础接口和后台鉴权</h2>
+      <h3>目标</h3>
+      <p>先让作品集数据和后台登录跑起来。此阶段还不接 Dify，避免前后端、数据库、后台和 AI 同时复杂化。</p>
+
+      <h3>让 AI 做什么</h3>
+      <ul class="checklist">
+        <li>根据 <code>spec-data-portfolio-mysql.md</code> 创建 SQL 初始化脚本。</li>
+        <li>创建 SQLAlchemy 模型：<code>Project</code>、<code>MediaAsset</code>、<code>ResumeFile</code>、<code>AdminUser</code>、<code>SiteProfile</code>、<code>PromptQuestion</code>。</li>
+        <li>实现 <code>GET /api/projects</code>。</li>
+        <li>实现 <code>GET /api/projects/{project_id}</code>。</li>
+        <li>实现 <code>GET /api/resume/current</code> 和 <code>GET /api/resume/download</code>。</li>
+        <li>实现 <code>GET /api/site/profile</code> 和 <code>GET /api/prompt-questions</code>。</li>
+        <li>实现 <code>POST /api/admin/auth/login</code>、<code>GET /api/admin/auth/me</code> 和后台 token 校验。</li>
+        <li>用种子数据插入 3 个项目、当前简历、站点配置、预设问题和一个管理员账号。</li>
+      </ul>
+
+      <h3>验收</h3>
+      <ul>
+        <li><code>GET /api/projects</code> 返回 3 个项目。</li>
+        <li><code>GET /api/projects/1</code> 返回技术栈、难点、解决方案和媒体数组。</li>
+        <li><code>GET /api/resume/download</code> 可以下载 PDF。</li>
+        <li><code>POST /api/admin/auth/login</code> 使用正确账号能返回 token，错误账号返回 401。</li>
+        <li>未登录访问任一 <code>/api/admin/*</code> 受保护接口返回 401。</li>
+        <li>前端还没接页面也没关系，先用浏览器或 curl 测接口。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请基于 spec-data-portfolio-mysql.md 和 spec-api-portfolio-backend.md 实现后端公开基础接口和后台鉴权。
+本阶段不要接 Dify。
+要求：
+1. 使用 SQLAlchemy + MySQL
+2. 创建 projects、media_assets、resume_files、admin_users、site_profile、prompt_questions 模型
+3. 实现 /api/projects、/api/projects/{project_id}
+4. 实现 /api/resume/current、/api/resume/download
+5. 实现 /api/site/profile、/api/prompt-questions
+6. 实现 /api/admin/auth/login、/api/admin/auth/me 和 token 鉴权
+7. 提供 seed 脚本插入 3 个项目、当前简历、站点配置、预设问题和管理员账号
+8. 写 pytest 或最小接口测试，证明公开接口和登录可用</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 3：后台 CRUD API</h2>
+      <h3>目标</h3>
+      <p>让后台可以维护公开页面内容，包括项目、截图、视频、PDF 简历、站点信息和 AI 预设问题。此阶段仍然不接 Dify。</p>
+
+      <h3>让 AI 做什么</h3>
+      <ul class="checklist">
+        <li>实现后台项目接口：列表、新增、编辑、软删除、发布/隐藏、排序、设置精选。</li>
+        <li>实现后台媒体接口：上传图片/视频/PDF、编辑说明、关联项目、软删除。</li>
+        <li>实现后台简历接口：上传 PDF、查看版本、设置当前简历。</li>
+        <li>实现后台站点配置接口：维护姓名、岗位、简介、联系方式和外部链接。</li>
+        <li>实现后台预设问题接口：新增、编辑、隐藏、删除、排序。</li>
+        <li>所有 <code>/api/admin/*</code> 管理接口必须校验管理员 token。</li>
+      </ul>
+
+      <h3>验收</h3>
+      <ul>
+        <li>登录后可以通过接口新增项目，新项目在公开接口中可见。</li>
+        <li>登录后可以上传截图，并把截图关联到项目。</li>
+        <li>登录后可以上传新版 PDF 简历并设为当前简历。</li>
+        <li>登录后可以新增首页预设问题，公开 <code>/api/prompt-questions</code> 能看到。</li>
+        <li>未登录调用任一后台 CRUD 接口返回 401。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请实现后台 CRUD API。本阶段不做后台页面，也不接 Dify。
+要求：
+1. 所有 /api/admin/* 接口必须校验管理员 token
+2. 实现项目 CRUD：新增、编辑、软删除、发布/隐藏、排序、精选
+3. 实现媒体 CRUD：上传图片/视频/PDF、关联项目、编辑 alt_text、软删除
+4. 实现简历管理：上传 PDF、列表、设置当前简历
+5. 实现站点配置管理：读取和更新 site_profile
+6. 实现 AI 预设问题 CRUD
+7. 写接口测试：未登录 401，登录后可增删改查</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 4：后端对接 Dify API 和 SSE 流式输出</h2>
+      <h3>目标</h3>
+      <p>实现真正的 AI 智能对话能力。前端永远只请求你自己的后端，不能直接请求 Dify。</p>
+
+      <div class="note danger">
+        <strong>安全红线：</strong>
+        真实 <code>DIFY_API_KEY</code> 只能出现在后端服务器环境变量里，不能写进前端、HTML、README 示例、截图或提交记录。
+      </div>
+
+      <h3>后端环境变量</h3>
+      <pre><code>DIFY_API_BASE_URL=https://api.dify.ai/v1
+DIFY_API_KEY=&lt;your-dify-api-key&gt;
+DIFY_USER_PREFIX=portfolio-web
+CHAT_LOG_ENABLED=true</code></pre>
+
+      <h3>让 AI 做什么</h3>
+      <ul class="checklist">
+        <li>实现 <code>POST /api/chat/stream</code>。</li>
+        <li>后端用 <code>httpx.AsyncClient</code> 请求 Dify Chat API。</li>
+        <li>请求体使用 <code>response_mode: "streaming"</code>。</li>
+        <li>后端把 Dify 返回的流转成标准 SSE：<code>event: message</code>、<code>event: done</code>、<code>event: error</code>。</li>
+        <li>保存 <code>conversation_id</code>，支持连续追问。</li>
+        <li>Dify 报错时，返回 <code>event: error</code>，不要让连接卡住。</li>
+      </ul>
+
+      <h3>curl 验收命令</h3>
+      <pre><code>curl -N -X POST http://localhost:8000/api/chat/stream ^
+  -H "Content-Type: application/json" ^
+  -H "Accept: text/event-stream" ^
+  -d "{\"message\":\"请介绍你的 Dify 简历助手项目\",\"visitor_id\":\"local-test\"}"</code></pre>
+
+      <h3>验收</h3>
+      <ul>
+        <li>能看到至少一个 <code>event: message</code>。</li>
+        <li>最后能看到 <code>event: done</code>。</li>
+        <li>断网或密钥错误时能看到 <code>event: error</code>。</li>
+        <li>前端代码和浏览器 Network 里看不到 Dify Key。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请实现 FastAPI 的 Dify SSE 后端代理接口 POST /api/chat/stream。
+要求：
+1. 前端只请求 /api/chat/stream，不直接请求 Dify
+2. DIFY_API_KEY 从环境变量读取
+3. 请求 Dify 时 response_mode 使用 streaming
+4. 把 Dify 流式响应转换成标准 SSE
+5. 输出 event: message / event: done / event: error
+6. conversation_id 要能返回给前端继续追问
+7. 写一个测试或 mock，验证没有真实 Dify 时也能测试 SSE 格式</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 5：React 前台和后台页面实现</h2>
+      <h3>目标</h3>
+      <p>把当前 <code>portfolio-design.html</code> 的视觉方向拆成 React 前台组件，同时实现后台管理页面，接入后端真实接口。</p>
+
+      <h3>前台组件拆分</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>组件</th>
+              <th>职责</th>
+              <th>数据来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ChatPanel</code></td>
+              <td>预设问题、对话列表、输入框、流式回答</td>
+              <td><code>/api/chat/stream</code></td>
+            </tr>
+            <tr>
+              <td><code>CandidateSummary</code></td>
+              <td>姓名、岗位、简历下载、证据入口</td>
+              <td>静态配置 + <code>/api/resume/current</code></td>
+            </tr>
+            <tr>
+              <td><code>ProjectGrid</code></td>
+              <td>3 个精选项目卡片</td>
+              <td><code>/api/projects?featured=true</code></td>
+            </tr>
+            <tr>
+              <td><code>ProjectDetail</code></td>
+              <td>项目背景、职责、难点、媒体</td>
+              <td><code>/api/projects/{id}</code></td>
+            </tr>
+            <tr>
+              <td><code>SkillSections</code></td>
+              <td>能力范围，不做百分比自评分</td>
+              <td>静态配置或后端配置</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>后台页面拆分</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>页面</th>
+              <th>职责</th>
+              <th>接口</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>AdminLogin</code></td>
+              <td>管理员登录，保存 token</td>
+              <td><code>/api/admin/auth/login</code></td>
+            </tr>
+            <tr>
+              <td><code>AdminProjects</code></td>
+              <td>项目列表、新增、编辑、隐藏、删除、排序</td>
+              <td><code>/api/admin/projects</code></td>
+            </tr>
+            <tr>
+              <td><code>AdminMedia</code></td>
+              <td>上传截图、视频、PDF，维护媒体说明和关联项目</td>
+              <td><code>/api/admin/media</code></td>
+            </tr>
+            <tr>
+              <td><code>AdminResumes</code></td>
+              <td>上传简历、设置当前版本</td>
+              <td><code>/api/admin/resumes</code></td>
+            </tr>
+            <tr>
+              <td><code>AdminSiteProfile</code></td>
+              <td>维护姓名、岗位、简介、联系方式</td>
+              <td><code>/api/admin/site/profile</code></td>
+            </tr>
+            <tr>
+              <td><code>AdminPromptQuestions</code></td>
+              <td>维护 AI 预设问题</td>
+              <td><code>/api/admin/prompt-questions</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>让 AI 做什么</h3>
+      <ul class="checklist">
+        <li>把 HTML 设计稿转为 React 组件。</li>
+        <li>保留首屏 AI 对话优先布局。</li>
+        <li>实现 <code>chatService.streamChat()</code>，用 <code>fetch</code> + <code>ReadableStream</code> 解析 SSE。</li>
+        <li>实现项目接口服务：<code>projectService.getProjects()</code>、<code>getProjectDetail()</code>。</li>
+        <li>实现后台接口服务：登录、项目 CRUD、媒体上传、简历管理、站点配置、预设问题管理。</li>
+        <li>实现生成中状态、错误状态、重试按钮、清空对话。</li>
+        <li>实现后台路由守卫：未登录访问后台跳转登录页。</li>
+        <li>移动端首屏必须先展示 AI 对话，不要让候选人摘要抢在前面。</li>
+      </ul>
+
+      <h3>验收</h3>
+      <ul>
+        <li>点击预设问题后，AI 回复逐字或分段出现。</li>
+        <li>输入自定义问题后，可以继续追问。</li>
+        <li>刷新页面不会出现空白或 JS 报错。</li>
+        <li>375px 手机宽度没有横向滚动。</li>
+        <li>简历下载按钮能打开或下载 PDF。</li>
+        <li>登录后台后可以新增项目、上传截图、设置当前简历和修改预设问题。</li>
+        <li>退出登录后再次访问后台管理页会跳回登录页。</li>
+      </ul>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请把当前 portfolio-design.html 拆成 React + TypeScript 前台组件，并实现后台管理页面。
+要求：
+1. 首屏仍然以 AI 对话为主，移动端也先显示 ChatPanel
+2. 不要恢复 Ask/SSE/Proof、Project Evidence、Skill Matrix 这些旧文案
+3. ChatPanel 接 /api/chat/stream，支持 SSE 流式渲染
+4. ProjectGrid 接 /api/projects?featured=true
+5. Resume 下载使用后端 /api/resume/download
+6. 后台包含登录、项目管理、媒体管理、简历管理、站点设置、预设问题管理
+7. 后台接口统一带 Authorization Bearer token
+8. 保留当前视觉风格，但代码要组件化、可维护</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 6：联调、QA 和体验优化</h2>
+      <h3>测试路径</h3>
+      <ul class="checklist">
+        <li>桌面端打开首页，首屏能看到 AI 对话和候选人摘要。</li>
+        <li>移动端 390px 打开首页，第一屏先看到 AI 对话。</li>
+        <li>点击 5 个预设问题，每个都能发送。</li>
+        <li>输入一个自定义问题，可以流式返回。</li>
+        <li>Dify 密钥错误时，页面显示可理解错误，不崩溃。</li>
+        <li>项目卡片能展示真实截图。</li>
+        <li>简历下载可用。</li>
+        <li>管理员可以登录后台。</li>
+        <li>管理员可以新增项目、上传截图、设置当前简历、维护预设问题。</li>
+        <li>未登录访问后台管理页面会跳转登录页。</li>
+        <li>浏览器控制台没有红色报错。</li>
+      </ul>
+
+      <h3>建议自动化检查</h3>
+      <pre><code># 前端
+cd frontend
+npm run build
+npm run lint
+
+# 后端
+cd backend
+pytest
+
+# 手动安全检查
+rg "app-|DIFY_API_KEY|MYSQL_PASSWORD" frontend backend --glob "!.env"</code></pre>
+
+      <h3>给 Vibe Coding 的提示词</h3>
+      <pre><code>请对当前项目做一次上线前 QA。
+重点检查：
+1. 桌面端和移动端首屏 AI 对话是否突出
+2. SSE 对话是否能连续追问
+3. 接口错误时页面是否有错误态
+4. 项目截图、简历下载是否可用
+5. 后台登录、项目 CRUD、媒体上传、简历管理、预设问题管理是否可用
+6. 前端源码是否泄露 Dify Key、管理员密码或 MySQL 密码
+请先列出问题，再逐项修复，并说明每项如何验证。</code></pre>
+    </section>
+
+    <section class="phase">
+      <h2>Phase 7：部署上线</h2>
+      <h3>推荐部署方案</h3>
+      <div class="two-col">
+        <div>
+          <h3>简单方案</h3>
+          <ul>
+            <li>前端：Vercel / Netlify / 静态服务器</li>
+            <li>后端：云服务器 + FastAPI + Uvicorn/Gunicorn</li>
+            <li>数据库：云 MySQL 或服务器自建 MySQL</li>
+            <li>媒体：服务器 <code>uploads/</code></li>
+          </ul>
+        </div>
+        <div>
+          <h3>更稳方案</h3>
+          <ul>
+            <li>前端：Vercel 或 Cloudflare Pages</li>
+            <li>后端：Docker 部署 FastAPI</li>
+            <li>数据库：托管 MySQL</li>
+            <li>媒体：对象存储 + CDN</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>上线前必须设置</h3>
+      <ul class="checklist">
+        <li>生产环境 <code>DIFY_API_KEY</code>。</li>
+        <li>生产环境 MySQL 用户和密码。</li>
+        <li>CORS 只允许你的前端域名。</li>
+        <li>上传目录不可执行脚本。</li>
+        <li>HTTPS 证书可用。</li>
+        <li>后端日志能看到 Dify 调用失败原因，但不打印密钥。</li>
+      </ul>
+
+      <h3>上线验收</h3>
+      <ul>
+        <li>公网访问首页正常。</li>
+        <li>手机浏览器打开正常。</li>
+        <li>AI 对话首问成功。</li>
+        <li>项目截图和视频可加载。</li>
+        <li>简历可下载。</li>
+        <li>查看网页源代码没有任何密钥。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>4. 每次 Vibe Coding 的标准工作循环</h2>
+      <ol>
+        <li><strong>给上下文：</strong>告诉 AI 当前阶段、相关文档、现有目录、不能做什么。</li>
+        <li><strong>让它先复述计划：</strong>确认它理解任务后再写代码。</li>
+        <li><strong>小步实现：</strong>一次只做一个接口、一个组件或一个联调点。</li>
+        <li><strong>马上验收：</strong>运行命令、打开页面、截图、curl 接口。</li>
+        <li><strong>修复问题：</strong>把错误日志原样给 AI，让它定位，不要让它猜。</li>
+        <li><strong>提交记录：</strong>每个阶段完成后 commit，避免后面改崩无法回退。</li>
+      </ol>
+
+      <h3>通用提示词模板</h3>
+      <pre><code>你现在是这个项目的全栈工程师。
+当前阶段：[写阶段名]
+目标：[写清楚本次要完成什么]
+已有文档：[列出 PRD / API / DB / 设计稿]
+限制：
+- 不要改无关文件
+- 不要把 Dify API Key 写进前端
+- 不要一次性重构整个项目
+- 每完成一个改动，都告诉我如何验证
+
+请先阅读相关文件并复述你的实施计划，等我确认后再写代码。</code></pre>
+    </section>
+
+    <section>
+      <h2>5. 最小可上线版本定义</h2>
+      <p>当下面清单全部完成，就可以作为 MVP 上线，而不是继续无限打磨。</p>
+      <ul class="checklist">
+        <li>首页首屏 AI 对话突出，桌面和手机都可用。</li>
+        <li>后端 <code>/api/chat/stream</code> 已真实对接 Dify。</li>
+        <li>AI 回复支持 SSE 流式展示。</li>
+        <li>项目区展示至少 3 个项目。</li>
+        <li>核心项目包含截图或视频证据。</li>
+        <li>简历下载可用。</li>
+        <li>后台管理员可以登录。</li>
+        <li>后台可以维护项目、媒体资源、简历文件、站点信息和 AI 预设问题。</li>
+        <li>前端源码不包含 Dify API Key。</li>
+        <li>公开页面不暴露后台 token、管理员密码或服务器真实文件路径。</li>
+        <li>生产环境 HTTPS 可访问。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>6. 建议你下一步立刻做什么</h2>
+      <ol>
+        <li>先在 Dify 里创建应用和知识库，把简历、项目说明放进去。</li>
+        <li>用 Dify 控制台测试 7 个预设问题，确认回答质量。</li>
+        <li>回到本项目，让 AI 执行 Phase 1：搭建 <code>frontend/</code> 和 <code>backend/</code>。</li>
+        <li>Phase 1 跑通后，再做 MySQL、公开接口和后台登录，不要马上接 Dify。</li>
+        <li>后台登录跑通后，先做项目、媒体、简历、站点配置和预设问题 CRUD。</li>
+        <li>后台 CRUD 跑通后，再做 Dify SSE 代理。</li>
+      </ol>
+
+      <div class="tag-row">
+        <span class="tag">先准备 Dify</span>
+        <span class="tag">再搭骨架</span>
+        <span class="tag">先后台 CRUD 后页面</span>
+        <span class="tag">小步验收</span>
+        <span class="tag">密钥不进前端</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
