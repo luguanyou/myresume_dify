@@ -1,4 +1,21 @@
 services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-portfolio_root_password}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-portfolio}
+      MYSQL_USER: ${MYSQL_USER:-portfolio_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-portfolio_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   backend:
     build:
       context: ./backend
@@ -10,19 +27,20 @@ services:
       CORS_ORIGINS: ${DOCKER_CORS_ORIGINS:-http://localhost:8080}
       DIFY_API_BASE_URL: ${DIFY_API_BASE_URL:-https://api.dify.ai/v1}
       DIFY_API_KEY: ${DIFY_API_KEY:-}
-      MYSQL_HOST: ${DOCKER_MYSQL_HOST:-host.docker.internal}
+      MYSQL_HOST: mysql
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-portfolio}
       MYSQL_USER: ${MYSQL_USER:-portfolio_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-123456}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-portfolio_password}
       ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:-}
       ADMIN_TOKEN_EXPIRE_SECONDS: ${ADMIN_TOKEN_EXPIRE_SECONDS:-86400}
       UPLOAD_DIR: /app/uploads
       PUBLIC_UPLOAD_BASE_URL: /uploads
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     volumes:
       - ./backend/uploads:/app/uploads
+    depends_on:
+      mysql:
+        condition: service_healthy
     expose:
       - "8000"
     healthcheck:
@@ -42,3 +60,6 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+
+volumes:
+  mysql_data:

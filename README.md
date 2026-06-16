@@ -87,7 +87,7 @@ Verification: open the Vite local URL, usually `http://localhost:5173`, and chec
 
 ## 7. Docker Deployment
 
-This project can run the frontend and backend in Docker while keeping MySQL installed directly on the server.
+This project can run the frontend, backend, and MySQL together with Docker Compose. This is the simplest deployment path because you do not need an existing remote database password.
 
 For a first-time production deployment, follow the step-by-step runbook in [DEPLOYMENT.md](DEPLOYMENT.md).
 
@@ -97,14 +97,14 @@ Create a production `.env` from the example:
 copy .env.example .env
 ```
 
-For Docker, keep the backend database host pointed at the server host:
+For Docker, choose new database passwords instead of trying to recover an old one:
 
 ```env
-DOCKER_MYSQL_HOST=host.docker.internal
 MYSQL_PORT=3306
 MYSQL_DATABASE=portfolio
 MYSQL_USER=portfolio_user
-MYSQL_PASSWORD=your_mysql_password
+MYSQL_PASSWORD=your_new_mysql_password
+MYSQL_ROOT_PASSWORD=your_new_mysql_root_password
 FRONTEND_PORT=8080
 DOCKER_CORS_ORIGINS=http://your-domain-or-server-ip:8080
 ```
@@ -128,7 +128,7 @@ docker compose logs -f backend
 docker compose logs -f frontend
 ```
 
-Initialize or seed the host MySQL database from inside the backend container:
+Initialize or seed the MySQL database from inside the backend container:
 
 ```bash
 docker compose exec backend python scripts/init_db.py
@@ -138,5 +138,6 @@ Notes:
 
 - The frontend container serves the built React app with Nginx.
 - Nginx inside the frontend container proxies `/api` and `/uploads` to the backend container.
+- MySQL runs inside Docker Compose and persists data in the `mysql_data` Docker volume.
 - Backend uploads are persisted through `./backend/uploads:/app/uploads`.
-- Do not expose MySQL to the public internet; allow only local/server Docker network access.
+- MySQL is not published to the public internet.
