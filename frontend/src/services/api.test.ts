@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from 'vitest'
 import { adminService } from './admin'
 import { streamChat } from './chat'
 import { projectService } from './projects'
+import { resumeDownloadUrl } from './public'
 
 function jsonResponse(data: unknown, init?: ResponseInit) {
   return new Response(JSON.stringify(data), {
@@ -25,7 +26,7 @@ describe('projectService', () => {
 
     const projects = await projectService.getFeaturedProjects()
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/projects?featured=true')
+    expect(fetchMock).toHaveBeenCalledWith('/dify/api/projects?featured=true')
     expect(projects).toHaveLength(1)
     expect(projects[0].title).toBe('AI Resume Assistant')
   })
@@ -44,7 +45,7 @@ describe('adminService', () => {
 
     await adminService.listProjects('token-123')
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/admin/projects', {
+    expect(fetchMock).toHaveBeenCalledWith('/dify/api/admin/projects', {
       headers: {
         Authorization: 'Bearer token-123',
       },
@@ -90,7 +91,7 @@ describe('streamChat', () => {
     )
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/chat/stream',
+      '/dify/api/chat/stream',
       expect.objectContaining({
         body: JSON.stringify({ message: 'Introduce yourself', visitor_id: 'test-user' }),
         method: 'POST',
@@ -98,5 +99,11 @@ describe('streamChat', () => {
     )
     expect(chunks.join('')).toBe('Hello world')
     expect(doneConversationId).toBe('c1')
+  })
+})
+
+describe('publicService urls', () => {
+  test('uses the /dify API prefix for resume downloads', () => {
+    expect(resumeDownloadUrl).toBe('/dify/api/resume/download')
   })
 })

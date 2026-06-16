@@ -1,6 +1,6 @@
 import type { ApiEnvelope, ApiErrorEnvelope } from './types'
 
-export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api'
+export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '/dify/api'
 
 export class ApiError extends Error {
   code: string

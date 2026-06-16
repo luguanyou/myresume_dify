@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import type { FormEvent } from 'react'
 
 import { adminService } from '../../services/admin'
+import { resumeDownloadUrl } from '../../services/public'
 import type { AdminResume } from '../../services/types'
 import { useAdminResource } from './useAdminResource'
 
@@ -88,7 +89,7 @@ export function AdminResumesPage({ token }: AdminPageProps) {
             </div>
             <div className="admin-row-actions">
               {resume.is_current ? (
-                <a className="btn btn-secondary" href="/api/resume/download">
+                <a className="btn btn-secondary" href={resumeDownloadUrl}>
                   下载当前
                 </a>
               ) : (

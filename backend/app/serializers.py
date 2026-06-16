@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
+from app.core.config import settings
 from app.models import AdminUser, MediaAsset, Project, PromptQuestion, ResumeFile, SiteProfile
 
 
@@ -11,6 +12,22 @@ def isoformat(value: datetime | None) -> str | None:
 
 def json_value(value: Any, default: Any) -> Any:
     return default if value is None else value
+
+
+def public_api_url(path: str) -> str:
+    base = settings.public_api_base_url.rstrip("/") or "/api"
+    normalized_path = path if path.startswith("/") else f"/{path}"
+    return f"{base}{normalized_path}"
+
+
+def public_asset_url(url: str | None) -> str | None:
+    if not url:
+        return url
+
+    upload_base = settings.public_upload_base_url.rstrip("/") or "/uploads"
+    if upload_base != "/uploads" and url.startswith("/uploads/"):
+        return f"{upload_base}{url.removeprefix('/uploads')}"
+    return url
 
 
 def serialize_media(asset: MediaAsset | None) -> dict[str, Any] | None:
@@ -24,8 +41,8 @@ def serialize_media(asset: MediaAsset | None) -> dict[str, Any] | None:
         "purpose": asset.purpose,
         "original_filename": asset.original_filename,
         "stored_filename": asset.stored_filename,
-        "url": asset.public_url,
-        "public_url": asset.public_url,
+        "url": public_asset_url(asset.public_url),
+        "public_url": public_asset_url(asset.public_url),
         "mime_type": asset.mime_type,
         "file_ext": asset.file_ext,
         "file_size": asset.file_size,
@@ -81,7 +98,7 @@ def serialize_cover_media(asset: MediaAsset | None) -> dict[str, Any] | None:
         return None
     return {
         "id": asset.id,
-        "url": asset.public_url,
+        "url": public_asset_url(asset.public_url),
         "media_type": asset.media_type,
     }
 
@@ -92,7 +109,7 @@ def serialize_resume(resume: ResumeFile) -> dict[str, Any]:
         "title": resume.title,
         "media_id": resume.media_id,
         "version_label": resume.version_label,
-        "download_url": "/api/resume/download",
+        "download_url": public_api_url("/resume/download"),
         "updated_at": isoformat(resume.updated_at),
     }
 
@@ -106,7 +123,7 @@ def serialize_admin_resume(resume: ResumeFile) -> dict[str, Any]:
         "is_current": resume.is_current,
         "status": resume.status,
         "media": serialize_media(resume.media),
-        "download_url": "/api/resume/download" if resume.is_current else None,
+        "download_url": public_api_url("/resume/download") if resume.is_current else None,
         "created_at": isoformat(resume.created_at),
         "updated_at": isoformat(resume.updated_at),
     }

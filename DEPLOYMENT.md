@@ -12,9 +12,9 @@ Browser
   |
   v
 frontend 容器，Nginx:80
-  |-- 静态文件：/usr/share/nginx/html
-  |-- 代理接口：/api -> backend:8000
-  |-- 代理文件：/uploads -> backend:8000
+  |-- 静态文件：/usr/share/nginx/html/dify
+  |-- 代理接口：/dify/api -> backend:8000/api
+  |-- 代理文件：/dify/uploads -> backend:8000/dify/uploads
   v
 backend 容器，FastAPI:8000
   |
@@ -89,9 +89,12 @@ ADMIN_JWT_SECRET=换成一串很长的随机字符串
 ADMIN_TOKEN_EXPIRE_SECONDS=86400
 
 UPLOAD_DIR=uploads
-PUBLIC_UPLOAD_BASE_URL=/uploads
+APP_ROOT_PATH=/dify
+PUBLIC_API_BASE_URL=/dify/api
+PUBLIC_UPLOAD_BASE_URL=/dify/uploads
 
-VITE_API_BASE_URL=/api
+VITE_API_BASE_URL=/dify/api
+VITE_APP_BASE_PATH=/dify/
 FRONTEND_PORT=8080
 DOCKER_CORS_ORIGINS=http://你的服务器IP:8080
 PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
@@ -159,7 +162,7 @@ docker compose exec backend python scripts/init_db.py
 默认后台账号：
 
 ```text
-访问路径：http://你的服务器IP:8080/admin
+访问路径：http://你的服务器IP:8080/dify/admin
 用户名：admin
 密码：admin123
 ```
@@ -171,19 +174,19 @@ docker compose exec backend python scripts/init_db.py
 访问前台：
 
 ```text
-http://你的服务器IP:8080
+http://你的服务器IP:8080/dify/
 ```
 
 访问后台：
 
 ```text
-http://你的服务器IP:8080/admin
+http://你的服务器IP:8080/dify/admin
 ```
 
 验证接口：
 
 ```bash
-curl http://127.0.0.1:8080/api/health
+curl http://127.0.0.1:8080/dify/api/health
 ```
 
 期望返回：
@@ -212,7 +215,7 @@ docker compose exec backend python scripts/init_db.py
 
 ```bash
 docker compose ps
-curl http://127.0.0.1:8080/api/health
+curl http://127.0.0.1:8080/dify/api/health
 ```
 
 ## 九、数据持久化和备份
@@ -257,7 +260,7 @@ docker compose exec backend python scripts/init_db.py
 简单测试可以直接用：
 
 ```text
-http://你的服务器IP:8080
+http://你的服务器IP:8080/dify/
 ```
 
 正式上线建议在服务器上用 Nginx 或 Caddy 做 HTTPS 反向代理：
@@ -283,7 +286,7 @@ docker compose up -d --build
 ### 页面能打开，但接口失败
 
 ```bash
-curl http://127.0.0.1:8080/api/health
+curl http://127.0.0.1:8080/dify/api/health
 docker compose logs --tail=100 backend
 ```
 

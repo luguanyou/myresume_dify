@@ -107,6 +107,11 @@ MYSQL_PASSWORD=your_new_mysql_password
 MYSQL_ROOT_PASSWORD=your_new_mysql_root_password
 FRONTEND_PORT=8080
 DOCKER_CORS_ORIGINS=http://your-domain-or-server-ip:8080
+APP_ROOT_PATH=/dify
+PUBLIC_API_BASE_URL=/dify/api
+PUBLIC_UPLOAD_BASE_URL=/dify/uploads
+VITE_API_BASE_URL=/dify/api
+VITE_APP_BASE_PATH=/dify/
 PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
 ```
@@ -120,7 +125,7 @@ docker compose up -d --build
 Open:
 
 ```text
-http://your-server-ip:8080
+http://your-server-ip:8080/dify/
 ```
 
 View logs:
@@ -143,4 +148,5 @@ Notes:
 - MySQL runs inside Docker Compose and persists data in the `mysql_data` Docker volume.
 - Backend uploads are persisted through `./backend/uploads:/app/uploads`.
 - MySQL is not published to the public internet.
+- The public app, API, uploads, and docs are served under the `/dify` URL prefix.
 - `PIP_INDEX_URL` and `NPM_CONFIG_REGISTRY` can be changed if your server has a faster package mirror.

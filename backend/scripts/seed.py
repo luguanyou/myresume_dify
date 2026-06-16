@@ -9,6 +9,7 @@ BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
+from app.core.config import settings
 from app.db.base import Base
 from app.db.session import SessionLocal, engine
 from app.models import AdminUser, MediaAsset, Project, PromptQuestion, ResumeFile, SiteProfile
@@ -143,7 +144,7 @@ def ensure_resume(db) -> None:
     if source_path.exists() and source_path.resolve() != upload_path.resolve():
         shutil.copyfile(source_path, upload_path)
 
-    resume_public_url = "/uploads/resume/resume-current.pdf"
+    resume_public_url = f"{settings.public_upload_base_url.rstrip('/')}/resume/resume-current.pdf"
     original_filename = source_path.name if source_path.exists() else "卢官有-简历.pdf"
     media = db.scalar(select(MediaAsset).where(MediaAsset.public_url == resume_public_url))
     if media is None:

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     service_name: str = "portfolio-api"
     api_version: str = "1.0"
     api_title: str = "AI Resume Portfolio API"
+    app_root_path: str = ""
     cors_origins: str = "http://localhost:5173"
 
     dify_api_base_url: str = "https://api.dify.ai/v1"
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     admin_token_expire_seconds: int = 86400
 
     upload_dir: str = "uploads"
+    public_api_base_url: str = "/api"
     public_upload_base_url: str = "/uploads"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")

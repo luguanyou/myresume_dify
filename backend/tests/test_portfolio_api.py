@@ -219,6 +219,15 @@ def test_resume_profile_and_prompt_public_endpoints(client):
     ]
 
 
+def test_resume_download_url_uses_configured_api_base(client, monkeypatch):
+    monkeypatch.setattr(settings, "public_api_base_url", "/dify/api")
+
+    resume_response = client.get("/api/resume/current")
+
+    assert resume_response.status_code == 200
+    assert resume_response.json()["data"]["download_url"] == "/dify/api/resume/download"
+
+
 def test_admin_login_and_me_require_valid_bearer_token(client):
     anonymous_response = client.get("/api/admin/auth/me")
     assert anonymous_response.status_code == 401

@@ -23,13 +23,15 @@ const tabs: Array<{ id: AdminTab; label: string }> = [
   { id: 'prompts', label: '预设问题' },
 ]
 
+const appBasePath = import.meta.env.BASE_URL || '/'
+
 export function AdminDashboard({ admin, token, onLogout }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('projects')
 
   return (
     <main className="admin-shell">
       <aside className="admin-sidebar">
-        <a className="admin-brand" href="/">
+        <a className="admin-brand" href={appBasePath}>
           <span className="admin-logo">卢</span>
           <span>
             <strong>Portfolio Admin</strong>
@@ -59,7 +61,7 @@ export function AdminDashboard({ admin, token, onLogout }: AdminDashboardProps) 
             <p className="eyebrow">Authorization Bearer token 已启用</p>
             <h1>{tabs.find((tab) => tab.id === activeTab)?.label}</h1>
           </div>
-          <a className="btn btn-secondary" href="/">
+          <a className="btn btn-secondary" href={appBasePath}>
             查看前台
           </a>
         </header>

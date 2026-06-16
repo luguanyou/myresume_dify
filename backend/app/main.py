@@ -17,7 +17,11 @@ from app.core.config import settings
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title=settings.api_title, version=settings.api_version)
+    app = FastAPI(
+        title=settings.api_title,
+        version=settings.api_version,
+        root_path=settings.app_root_path.rstrip("/"),
+    )
 
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
