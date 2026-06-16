@@ -2,8 +2,10 @@ FROM node:24-alpine AS build
 
 WORKDIR /app
 
+ARG NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
+
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --registry=$NPM_CONFIG_REGISTRY
 
 COPY . .
 

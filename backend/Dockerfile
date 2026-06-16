@@ -1,21 +1,20 @@
 FROM python:3.12-slim
 
+ARG PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    UV_COMPILE_BYTECODE=1 \
-    UV_LINK_MODE=copy
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+COPY requirements.txt ./
+RUN pip install --index-url "$PIP_INDEX_URL" -r requirements.txt
 
-COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
+COPY . ./
 
-COPY . .
-
-ENV PATH="/app/.venv/bin:$PATH" \
-    UPLOAD_DIR=/app/uploads
+ENV UPLOAD_DIR=/app/uploads
 
 EXPOSE 8000
 

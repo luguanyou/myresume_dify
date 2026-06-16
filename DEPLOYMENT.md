@@ -94,6 +94,8 @@ PUBLIC_UPLOAD_BASE_URL=/uploads
 VITE_API_BASE_URL=/api
 FRONTEND_PORT=8080
 DOCKER_CORS_ORIGINS=http://你的服务器IP:8080
+PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
 ```
 
 如果有正式域名和 HTTPS：
@@ -108,6 +110,7 @@ DOCKER_CORS_ORIGINS=https://your-domain.com
 - `MYSQL_PASSWORD` 和 `MYSQL_ROOT_PASSWORD` 是新密码，不用找旧数据库密码。
 - `ADMIN_JWT_SECRET` 必须换成长随机字符串。
 - `DIFY_API_KEY` 可以先留空，只会影响 AI 对话相关能力。
+- `PIP_INDEX_URL` 和 `NPM_CONFIG_REGISTRY` 用于加快国内服务器安装 Python/npm 依赖。
 
 ## 五、启动服务
 
@@ -116,6 +119,18 @@ DOCKER_CORS_ORIGINS=https://your-domain.com
 ```bash
 docker compose up -d --build
 ```
+
+### 构建特别慢或卡在下载镜像
+
+如果服务器构建卡了很久，先按 `Ctrl+C` 停掉当前构建，然后拉取最新代码再重建：
+
+```bash
+git pull
+docker compose build --progress=plain --no-cache backend frontend
+docker compose up -d
+```
+
+当前后端镜像不再依赖 `ghcr.io/astral-sh/uv`，默认使用清华 PyPI 镜像；前端默认使用 npmmirror。第一次构建仍然需要下载 `python`、`node`、`nginx`、`mysql` 基础镜像，但不应该再卡几个小时。
 
 查看状态：
 
