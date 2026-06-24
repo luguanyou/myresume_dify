@@ -19,6 +19,16 @@ def test_docker_compose_runs_mysql_inside_the_stack():
     assert "VITE_APP_BASE_PATH: ${VITE_APP_BASE_PATH:-/dify/}" in compose
 
 
+def test_backend_compose_loads_runtime_secrets_from_backend_env_file():
+    compose = (REPO_ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+    backend_section = compose.split("  backend:", 1)[1].split("  frontend:", 1)[0]
+
+    assert "env_file:" in backend_section
+    assert "- ./backend/.env" in backend_section
+    assert "DIFY_API_KEY:" not in backend_section
+    assert "DIFY_API_BASE_URL:" not in backend_section
+
+
 def test_backend_dockerfile_does_not_pull_uv_from_ghcr():
     dockerfile = (REPO_ROOT / "backend" / "Dockerfile").read_text(encoding="utf-8")
 

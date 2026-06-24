@@ -8,7 +8,7 @@
 Browser
   |
   v
-服务器公网端口，例如 8080 或 443
+服务器公网端口，例如 8180 或 443
   |
   v
 frontend 容器，Nginx:80
@@ -22,7 +22,7 @@ backend 容器，FastAPI:8000
 mysql 容器，MySQL:3306
 ```
 
-默认只对外暴露前端端口 `8080`。MySQL 不会暴露到公网。
+默认只对外暴露前端端口 `8180`。MySQL 不会暴露到公网。
 
 ## 二、服务器准备
 
@@ -95,8 +95,8 @@ PUBLIC_UPLOAD_BASE_URL=/dify/uploads
 
 VITE_API_BASE_URL=/dify/api
 VITE_APP_BASE_PATH=/dify/
-FRONTEND_PORT=8080
-DOCKER_CORS_ORIGINS=http://你的服务器IP:8080
+FRONTEND_PORT=8180
+DOCKER_CORS_ORIGINS=http://你的服务器IP:8180
 PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
 ```
@@ -162,7 +162,7 @@ docker compose exec backend python scripts/init_db.py
 默认后台账号：
 
 ```text
-访问路径：http://你的服务器IP:8080/dify/admin
+访问路径：http://你的服务器IP:8180/dify/admin
 用户名：admin
 密码：admin123
 ```
@@ -174,19 +174,19 @@ docker compose exec backend python scripts/init_db.py
 访问前台：
 
 ```text
-http://你的服务器IP:8080/dify/
+http://你的服务器IP:8180/dify/
 ```
 
 访问后台：
 
 ```text
-http://你的服务器IP:8080/dify/admin
+http://你的服务器IP:8180/dify/admin
 ```
 
 验证接口：
 
 ```bash
-curl http://127.0.0.1:8080/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health
 ```
 
 期望返回：
@@ -215,7 +215,7 @@ docker compose exec backend python scripts/init_db.py
 
 ```bash
 docker compose ps
-curl http://127.0.0.1:8080/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health
 ```
 
 ## 九、数据持久化和备份
@@ -260,13 +260,13 @@ docker compose exec backend python scripts/init_db.py
 简单测试可以直接用：
 
 ```text
-http://你的服务器IP:8080/dify/
+http://你的服务器IP:8180/dify/
 ```
 
 正式上线建议在服务器上用 Nginx 或 Caddy 做 HTTPS 反向代理：
 
 ```text
-https://your-domain.com -> http://127.0.0.1:8080
+https://your-domain.com -> http://127.0.0.1:8180
 ```
 
 启用域名后，把 `.env` 改成：
@@ -286,7 +286,7 @@ docker compose up -d --build
 ### 页面能打开，但接口失败
 
 ```bash
-curl http://127.0.0.1:8080/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health
 docker compose logs --tail=100 backend
 ```
 
@@ -324,8 +324,8 @@ docker compose exec backend ls -lah /app/uploads
 修改 `.env`：
 
 ```env
-FRONTEND_PORT=8081
-DOCKER_CORS_ORIGINS=http://你的服务器IP:8081
+FRONTEND_PORT=8181
+DOCKER_CORS_ORIGINS=http://你的服务器IP:8181
 ```
 
 然后重启：

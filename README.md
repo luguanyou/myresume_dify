@@ -105,8 +105,8 @@ MYSQL_DATABASE=portfolio
 MYSQL_USER=portfolio_user
 MYSQL_PASSWORD=your_new_mysql_password
 MYSQL_ROOT_PASSWORD=your_new_mysql_root_password
-FRONTEND_PORT=8080
-DOCKER_CORS_ORIGINS=http://your-domain-or-server-ip:8080
+FRONTEND_PORT=8180
+DOCKER_CORS_ORIGINS=http://your-domain-or-server-ip:8180
 APP_ROOT_PATH=/dify
 PUBLIC_API_BASE_URL=/dify/api
 PUBLIC_UPLOAD_BASE_URL=/dify/uploads
@@ -125,7 +125,7 @@ docker compose up -d --build
 Open:
 
 ```text
-http://your-server-ip:8080/dify/
+http://your-server-ip:8180/dify/
 ```
 
 View logs:
