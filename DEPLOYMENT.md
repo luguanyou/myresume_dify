@@ -1,6 +1,6 @@
 # AI 简历作品集最简部署文档
 
-这份文档走最省心的路线：前端、后端、MySQL 全部交给 Docker Compose 管理。你不需要知道一台远程 MySQL 的旧密码，只需要在 `.env` 里设置一组新的数据库密码。
+这份文档走“服务器已有 MySQL”的路线：前端和后端交给 Docker Compose 管理，数据库使用 Linux 服务器上已经安装好的 MySQL。
 
 ## 一、部署架构
 
@@ -19,10 +19,10 @@ frontend 容器，Nginx:80
 backend 容器，FastAPI:8000
   |
   v
-mysql 容器，MySQL:3306
+Linux 宿主机上的 MySQL:3306
 ```
 
-默认只对外暴露前端端口 `8180`。MySQL 不会暴露到公网。
+默认只对外暴露前端端口 `8180`。MySQL 不需要暴露到公网，但要允许 Docker 后端容器从宿主机网关访问。
 
 ## 二、服务器准备
 
@@ -30,6 +30,7 @@ mysql 容器，MySQL:3306
 
 - Docker
 - Docker Compose plugin
+- MySQL Server，也就是你已经装好的远程服务器 MySQL
 - Git，如果你要在服务器上直接拉代码
 
 验证 Docker：
@@ -57,6 +58,22 @@ docker-compose.yml
 
 ## 四、配置环境变量
 
+先在服务器 MySQL 里准备数据库和账号。如果你已经有可用账号，可以跳过创建用户，只确认它有 `portfolio` 数据库权限。
+
+```bash
+sudo mysql
+```
+
+```sql
+CREATE DATABASE IF NOT EXISTS portfolio DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'portfolio_user'@'%' IDENTIFIED BY '换成服务器 MySQL 用户密码';
+GRANT ALL PRIVILEGES ON portfolio.* TO 'portfolio_user'@'%';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+这里用 `'%'` 是因为后端跑在 Docker 容器里，连到宿主机 MySQL 时通常不会被 MySQL 识别成 `localhost`。
+
 复制示例文件：
 
 ```bash
@@ -79,11 +96,11 @@ API_TITLE="AI Resume Portfolio API"
 DIFY_API_BASE_URL=https://api.dify.ai/v1
 DIFY_API_KEY=
 
+MYSQL_HOST=host.docker.internal
 MYSQL_PORT=3306
 MYSQL_DATABASE=portfolio
 MYSQL_USER=portfolio_user
-MYSQL_PASSWORD=换成一个新的强密码
-MYSQL_ROOT_PASSWORD=再换成另一个新的强密码
+MYSQL_PASSWORD=换成服务器 MySQL 里这个用户的密码
 
 ADMIN_JWT_SECRET=换成一串很长的随机字符串
 ADMIN_TOKEN_EXPIRE_SECONDS=86400
@@ -110,10 +127,13 @@ DOCKER_CORS_ORIGINS=https://your-domain.com
 关键点：
 
 - `.env` 不要提交到代码仓库。
-- `MYSQL_PASSWORD` 和 `MYSQL_ROOT_PASSWORD` 是新密码，不用找旧数据库密码。
+- `MYSQL_HOST=host.docker.internal` 表示后端容器连接 Linux 宿主机上的 MySQL。
+- `MYSQL_USER` 和 `MYSQL_PASSWORD` 要填写服务器 MySQL 中真实存在、并且有 `portfolio` 数据库权限的账号。
 - `ADMIN_JWT_SECRET` 必须换成长随机字符串。
 - `DIFY_API_KEY` 可以先留空，只会影响 AI 对话相关能力。
 - `PIP_INDEX_URL` 和 `NPM_CONFIG_REGISTRY` 用于加快国内服务器安装 Python/npm 依赖。
+
+如果你的 MySQL 只监听 `127.0.0.1`，Docker 容器可能连不上。需要让 MySQL 监听宿主机网关地址或 `0.0.0.0`，并用防火墙保证 `3306` 不对公网开放。
 
 ## 五、启动服务
 
@@ -133,7 +153,7 @@ docker compose build --progress=plain --no-cache backend frontend
 docker compose up -d
 ```
 
-当前后端镜像不再依赖 `ghcr.io/astral-sh/uv`，默认使用清华 PyPI 镜像；前端默认使用 npmmirror。第一次构建仍然需要下载 `python`、`node`、`nginx`、`mysql` 基础镜像，但不应该再卡几个小时。
+当前后端镜像不再依赖 `ghcr.io/astral-sh/uv`，默认使用清华 PyPI 镜像；前端默认使用 npmmirror。第一次构建仍然需要下载 `python`、`node`、`nginx` 基础镜像，但不应该再卡几个小时。
 
 查看状态：
 
@@ -141,12 +161,11 @@ docker compose up -d
 docker compose ps
 ```
 
-期望看到 `mysql`、`backend`、`frontend` 都是 running 或 healthy。
+期望看到 `backend`、`frontend` 都是 running 或 healthy。
 
 如果失败，先看日志：
 
 ```bash
-docker compose logs --tail=100 mysql
 docker compose logs --tail=100 backend
 docker compose logs --tail=100 frontend
 ```
@@ -187,9 +206,12 @@ http://你的服务器IP:8180/dify/admin
 
 ```bash
 curl http://127.0.0.1:8180/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health/db
 ```
 
-期望返回：
+第一个接口只说明后端进程正常；第二个接口会检查 MySQL 是否能连接、核心表是否已经创建。两个接口都正常后，作品、简历、后台登录这类依赖数据库的接口才应该正常。
+
+`/dify/api/health` 期望返回：
 
 ```json
 {
@@ -216,15 +238,12 @@ docker compose exec backend python scripts/init_db.py
 ```bash
 docker compose ps
 curl http://127.0.0.1:8180/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health/db
 ```
 
 ## 九、数据持久化和备份
 
-MySQL 数据保存在 Docker volume：
-
-```text
-mysql_data
-```
+MySQL 数据保存在服务器本机 MySQL 的数据目录中，不由 Docker Compose 管理。
 
 上传文件保存在宿主机目录：
 
@@ -235,25 +254,30 @@ backend/uploads/
 建议定期备份：
 
 ```bash
-docker compose exec mysql mysqldump -uroot -p portfolio > portfolio.sql
+mysqldump -uportfolio_user -p portfolio > portfolio.sql
 tar -czf uploads.tar.gz backend/uploads
 cp .env env.backup
 ```
 
 ## 十、忘记数据库密码怎么办
 
-如果你使用的是这份 Compose 部署，通常最简单是：
-
-1. 如果不需要保留旧数据，直接换 `.env` 里的 `MYSQL_PASSWORD` 和 `MYSQL_ROOT_PASSWORD`，然后删除旧 volume 后重建：
+这份 Compose 不再管理 MySQL 容器，所以数据库密码需要在服务器本机 MySQL 里处理。通常做法是用服务器上的 MySQL root 或 sudo 权限登录后修改用户密码，然后同步更新项目根目录的 `.env`：
 
 ```bash
-docker compose down
-docker volume rm myresume_mysql_data
-docker compose up -d --build
-docker compose exec backend python scripts/init_db.py
+sudo mysql
 ```
 
-2. 如果必须保留旧数据，不要删 volume。需要进入 MySQL 容器用 root 或跳过权限的方式重置密码，步骤更复杂，建议先备份再操作。
+```sql
+ALTER USER 'portfolio_user'@'%' IDENTIFIED BY '新的强密码';
+FLUSH PRIVILEGES;
+```
+
+如果你的用户是 `'portfolio_user'@'localhost'` 或其他 host，请按实际用户记录修改。改完 `.env` 后重启后端：
+
+```bash
+docker compose up -d --build backend
+docker compose exec backend python scripts/init_db.py
+```
 
 ## 十一、域名和 HTTPS
 
@@ -287,13 +311,17 @@ docker compose up -d --build
 
 ```bash
 curl http://127.0.0.1:8180/dify/api/health
+curl http://127.0.0.1:8180/dify/api/health/db
 docker compose logs --tail=100 backend
 ```
+
+如果 `/dify/api/health` 正常，但 `/dify/api/health/db` 返回 `503`，问题通常在数据库配置或初始化，而不是前端。
 
 常见原因：
 
 - 后端容器没有启动。
 - `.env` 的 `DOCKER_CORS_ORIGINS` 和访问地址不一致。
+- 后端容器连不上宿主机 MySQL，检查 `MYSQL_HOST`、MySQL 监听地址、用户授权和防火墙。
 - 数据库还没有初始化，需要运行 `docker compose exec backend python scripts/init_db.py`。
 
 ### 后台登录失败
