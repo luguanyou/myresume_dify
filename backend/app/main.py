@@ -17,10 +17,12 @@ from app.core.config import settings
 
 
 def create_app() -> FastAPI:
+    servers = [{"url": "/dify", "description": "Docker deployment"}] if settings.app_root_path else []
+
     app = FastAPI(
         title=settings.api_title,
         version=settings.api_version,
-        root_path=settings.app_root_path.rstrip("/"),
+        servers=servers,
     )
 
     @app.exception_handler(HTTPException)
