@@ -46,6 +46,13 @@ def test_frontend_dockerfile_allows_fast_npm_registry():
     assert "ARG VITE_APP_BASE_PATH=/dify/" in dockerfile
 
 
+def test_vite_dev_server_proxies_upload_paths():
+    vite_config = (REPO_ROOT / "frontend" / "vite.config.ts").read_text(encoding="utf-8")
+
+    assert "'/dify/uploads'" in vite_config
+    assert "target: 'http://127.0.0.1:8000'" in vite_config
+
+
 def test_nginx_serves_app_under_dify_prefix_and_proxies_backend_routes():
     nginx = (REPO_ROOT / "frontend" / "nginx.conf").read_text(encoding="utf-8")
 

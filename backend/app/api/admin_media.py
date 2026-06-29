@@ -24,12 +24,25 @@ class MediaUpdateRequest(BaseModel):
     status: Literal["draft", "published", "hidden"] | None = None
 
 
-def ensure_project_exists(project_id: int | None, db: Session) -> None:
+def get_project(project_id: int | None, db: Session) -> Project | None:
     if project_id is None:
-        return
+        return None
     project = db.scalar(select(Project).where(Project.id == project_id, Project.deleted_at.is_(None)))
     if project is None:
         raise api_error(404, "NOT_FOUND", "Project not found")
+    return project
+
+
+def ensure_project_exists(project_id: int | None, db: Session) -> None:
+    get_project(project_id, db)
+
+
+def set_project_cover_if_empty(project: Project | None, asset: MediaAsset) -> None:
+    if project is None or project.cover_media_id is not None:
+        return
+    if asset.media_type != "image":
+        return
+    project.cover_media_id = asset.id
 
 
 def get_media_or_404(media_id: int, db: Session) -> MediaAsset:
@@ -85,7 +98,7 @@ async def upload_admin_media(
     sort_order: int = Form(default=0),
     db: Session = Depends(get_db),
 ):
-    ensure_project_exists(project_id, db)
+    project = get_project(project_id, db)
     stored = await save_upload_file(file, media_type, purpose)
     asset = MediaAsset(
         project_id=project_id,
@@ -103,6 +116,10 @@ async def upload_admin_media(
         status="published",
     )
     db.add(asset)
+    db.flush()
+    set_project_cover_if_empty(project, asset)
+    if project is not None:
+        db.add(project)
     db.commit()
     db.refresh(asset)
     return ok(serialize_media(asset), message="uploaded")

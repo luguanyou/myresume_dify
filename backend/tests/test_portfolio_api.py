@@ -7,7 +7,7 @@ from starlette.testclient import TestClient
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import get_db
-from app.main import app
+from app.main import create_app
 from app.models import AdminUser, MediaAsset, Project, PromptQuestion, ResumeFile, SiteProfile
 from app.security import hash_password
 
@@ -15,7 +15,9 @@ from app.security import hash_password
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "upload_dir", str(tmp_path / "uploads"))
+    monkeypatch.setattr(settings, "public_api_base_url", "/api")
     monkeypatch.setattr(settings, "public_upload_base_url", "/uploads")
+    test_app = create_app()
 
     engine = create_engine(
         "sqlite://",
@@ -157,10 +159,10 @@ def client(tmp_path, monkeypatch):
         finally:
             db.close()
 
-    app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as test_client:
+    test_app.dependency_overrides[get_db] = override_get_db
+    with TestClient(test_app) as test_client:
         yield test_client
-    app.dependency_overrides.clear()
+    test_app.dependency_overrides.clear()
 
 
 def admin_headers(client):
@@ -196,6 +198,34 @@ def test_public_project_list_and_detail(client):
     assert detail["features"] == ["Public project list", "Admin authentication"]
     assert detail["tech_stack"] == ["FastAPI", "SQLAlchemy", "MySQL"]
     assert detail["media"][0]["url"] == "/uploads/projects/cover.png"
+
+
+def test_public_project_list_uses_first_project_image_when_cover_is_missing(client):
+    headers = admin_headers(client)
+    projects = client.get("/api/admin/projects", headers=headers).json()["data"]
+    project = next(item for item in projects if item["slug"] == "frontend-portfolio-ui")
+
+    upload_response = client.post(
+        "/api/admin/media",
+        data={"media_type": "image", "purpose": "screenshot", "project_id": str(project["id"])},
+        files={"file": ("fallback.png", b"\x89PNG\r\n\x1a\nfallback", "image/png")},
+        headers=headers,
+    )
+    assert upload_response.status_code == 200
+    media = upload_response.json()["data"]
+
+    clear_cover_response = client.put(
+        f"/api/admin/projects/{project['id']}",
+        json={"cover_media_id": None},
+        headers=headers,
+    )
+    assert clear_cover_response.status_code == 200
+
+    public_projects = client.get("/api/projects").json()["data"]
+    public_project = next(item for item in public_projects if item["slug"] == "frontend-portfolio-ui")
+
+    assert public_project["cover_media"]["id"] == media["id"]
+    assert public_project["cover_media"]["url"] == media["url"]
 
 
 def test_resume_profile_and_prompt_public_endpoints(client):
@@ -285,7 +315,7 @@ def test_admin_project_crud_requires_token_and_updates_public_visibility(client)
         "challenges": ["Auth"],
         "solutions": ["Bearer token"],
         "tech_stack": ["FastAPI", "SQLAlchemy"],
-        "links": [],
+        "links": [{"label": "GitHub", "url": "https://github.com/example/project", "link_type": "github"}],
         "is_featured": True,
         "sort_order": 120,
         "status": "published",
@@ -306,9 +336,17 @@ def test_admin_project_crud_requires_token_and_updates_public_visibility(client)
     detail_response = client.get(f"/api/admin/projects/{created['id']}", headers=headers)
     assert detail_response.status_code == 200
     assert detail_response.json()["data"]["features"] == ["Create", "Update"]
+    assert detail_response.json()["data"]["links"] == [
+        {"label": "GitHub", "url": "https://github.com/example/project", "link_type": "github"}
+    ]
 
     public_slugs = [project["slug"] for project in client.get("/api/projects").json()["data"]]
     assert "admin-created-project" in public_slugs
+
+    public_detail = client.get(f"/api/projects/{created['id']}").json()["data"]
+    assert public_detail["links"] == [
+        {"label": "GitHub", "url": "https://github.com/example/project", "link_type": "github"}
+    ]
 
     update_response = client.put(
         f"/api/admin/projects/{created['id']}",
@@ -382,6 +420,25 @@ def test_admin_media_crud_uploads_edits_and_soft_deletes_files(client):
 
     list_after_delete = client.get("/api/admin/media", params={"project_id": project_id}, headers=headers)
     assert media["id"] not in [item["id"] for item in list_after_delete.json()["data"]]
+
+
+def test_admin_media_upload_sets_empty_project_cover(client):
+    headers = admin_headers(client)
+    projects = client.get("/api/admin/projects", headers=headers).json()["data"]
+    project = next(item for item in projects if item["slug"] == "frontend-portfolio-ui")
+    assert project["cover_media_id"] is None
+
+    upload_response = client.post(
+        "/api/admin/media",
+        data={"media_type": "image", "purpose": "screenshot", "project_id": str(project["id"])},
+        files={"file": ("project-shot.png", b"\x89PNG\r\n\x1a\ncover", "image/png")},
+        headers=headers,
+    )
+    assert upload_response.status_code == 200
+    media = upload_response.json()["data"]
+
+    updated_project = client.get(f"/api/admin/projects/{project['id']}", headers=headers).json()["data"]
+    assert updated_project["cover_media_id"] == media["id"]
 
 
 def test_admin_resume_upload_list_and_set_current(client):

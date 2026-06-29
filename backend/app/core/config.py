@@ -1,6 +1,10 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy import URL
+
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -23,18 +27,23 @@ class Settings(BaseSettings):
     admin_token_expire_seconds: int = 86400
 
     upload_dir: str = "uploads"
-    public_api_base_url: str = "/api"
-    public_upload_base_url: str = "/uploads"
+    public_api_base_url: str = "/dify/api"
+    public_upload_base_url: str = "/dify/uploads"
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=BACKEND_ROOT / ".env", env_file_encoding="utf-8", extra="ignore")
 
     @property
     def database_url(self) -> str:
-        return (
-            f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}"
-            f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}"
-            "?charset=utf8mb4"
+        url = URL.create(
+            "mysql+pymysql",
+            username=self.mysql_user,
+            password=self.mysql_password,
+            host=self.mysql_host,
+            port=self.mysql_port,
+            database=self.mysql_database,
+            query={"charset": "utf8mb4"},
         )
+        return url.render_as_string(hide_password=False)
 
     @property
     def token_secret(self) -> str:

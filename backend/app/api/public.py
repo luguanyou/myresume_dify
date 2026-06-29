@@ -31,7 +31,8 @@ def list_projects(
     projects = db.scalars(query.order_by(Project.sort_order.desc(), Project.id.desc()).limit(limit)).all()
 
     cover_ids = [project.cover_media_id for project in projects if project.cover_media_id is not None]
-    media_by_id = {}
+    media_by_id: dict[int, MediaAsset] = {}
+    fallback_media_by_project_id: dict[int, MediaAsset] = {}
     if cover_ids:
         cover_media = db.scalars(
             select(MediaAsset).where(
@@ -42,7 +43,33 @@ def list_projects(
         ).all()
         media_by_id = {asset.id: asset for asset in cover_media}
 
-    return ok([serialize_project_list_item(project, media_by_id.get(project.cover_media_id)) for project in projects])
+    projects_without_cover = [project.id for project in projects if project.cover_media_id is None]
+    if projects_without_cover:
+        fallback_media = db.scalars(
+            select(MediaAsset)
+            .where(
+                MediaAsset.project_id.in_(projects_without_cover),
+                MediaAsset.media_type == "image",
+                MediaAsset.status == "published",
+                MediaAsset.deleted_at.is_(None),
+            )
+            .order_by(MediaAsset.project_id.asc(), MediaAsset.sort_order.desc(), MediaAsset.id.asc())
+        ).all()
+        for asset in fallback_media:
+            if asset.project_id is not None:
+                fallback_media_by_project_id.setdefault(asset.project_id, asset)
+
+    return ok(
+        [
+            serialize_project_list_item(
+                project,
+                media_by_id.get(project.cover_media_id)
+                if project.cover_media_id is not None
+                else fallback_media_by_project_id.get(project.id),
+            )
+            for project in projects
+        ]
+    )
 
 
 @router.get("/projects/{project_id}")
